@@ -1,6 +1,8 @@
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
+var roleMechanic = require('role.mechanic');
+var nameGenerator = require('util.namegenerator');
 
 const MAX_SPAWNS = 20;
 const sources = Game.rooms["E1N6"].find(FIND_SOURCES);
@@ -17,22 +19,42 @@ module.exports.loop = function () {
 
     var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
     var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
+    var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
+    var mechanics = _.filter(Game.creeps, (creep) => creep.memory.role == 'mechanic');
 
-    if(harvesters.length < 1) {
-        var newName = 'Harvester' + Game.time;
-        Game.spawns['Spawn1'].spawnCreep([WORK,CARRY,MOVE], newName,
+    if(harvesters.length < 4) {
+        var newName = nameGenerator.getName() + " (H)";
+        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE], newName,
             {memory: {
                 role: 'harvester',
-                sourceIndex: 0
+                sourceIndex: 1
             }});
     }
 
-    if(builders.length < 6) {
-        var newName = 'Builder' + Game.time;
-        Game.spawns['Spawn1'].spawnCreep([WORK,CARRY,MOVE], newName,
+    if(builders.length < 1) {
+        var newName = nameGenerator.getName() + " (B)";
+        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, MOVE, CARRY, CARRY], newName,
             {memory: {
                 role: 'builder',
                 sourceIndex: 1
+        }});
+    }
+
+    if(upgraders.length < 1) {
+        var newName = nameGenerator.getName() + " (U)";
+        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE], newName,
+            {memory: {
+                role: 'upgrader',
+                sourceIndex: 0
+        }});
+    }
+
+    if(mechanics.length < 2) {
+        var newName = nameGenerator.getName() + " (M)";
+        Game.spawns['Spawn1'].spawnCreep([WORK,MOVE,MOVE,CARRY], newName,
+            {memory: {
+                role: 'mechanic',
+                sourceIndex: 0
         }});
     }
 
@@ -57,6 +79,9 @@ module.exports.loop = function () {
         }
         if(creep.memory.role == 'builder') {
             roleBuilder.run(creep);
+        }
+        if(creep.memory.role == 'mechanic') {
+            roleMechanic.run(creep);
         }
     }
 }

@@ -20,6 +20,30 @@ var roleUpgrader = {
         else {
             var sourceIndex = creep.memory.sourceIndex;
             var sources = creep.room.find(FIND_SOURCES);
+
+            // Check if sources are occupied
+            if (sourceIndex == 0) {
+                let sourceFlag = Game.flags["sourceNW"];
+                let creepsAtSource = creep.room.lookForAtArea(LOOK_CREEPS,sourceFlag.pos.x+1,sourceFlag.pos.x-1,sourceFlag.pos.y+1,sourceFlag.pos.y-1,true).length;
+                let idleFlag = Game.flags["IdlePoint1"];
+
+                if (creepsAtSource > 1) {
+                    console.log(creep.name + ": Moving to idle point");
+                    creep.moveTo(idleFlag);
+                }
+            } else {
+                let sourceFlag = Game.flags["SourceS"];
+                let creepsAtSource = creep.room.lookForAtArea(LOOK_CREEPS,sourceFlag.pos.x+1,sourceFlag.pos.x-1,sourceFlag.pos.y+1,sourceFlag.pos.y-1,true).length;
+                let idleFlag = Game.flags["IdlePoint2"];
+
+                if (creepsAtSource > 3) {
+
+                    console.log(creep.name + ": Moving to idle point");
+                    creep.moveTo(idleFlag);
+                }
+            }   
+
+
             if(creep.harvest(sources[sourceIndex]) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(sources[sourceIndex], {visualizePathStyle: {stroke: '#ffaa00'}});
             }
