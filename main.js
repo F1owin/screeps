@@ -2,6 +2,7 @@ var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 var roleMechanic = require('role.mechanic');
+var roleKnight = require('role.knight');
 var nameGenerator = require('util.namegenerator');
 
 const MAX_SPAWNS = 20;
@@ -21,6 +22,7 @@ module.exports.loop = function () {
     var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
     var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
     var mechanics = _.filter(Game.creeps, (creep) => creep.memory.role == 'mechanic');
+    var knights = _.filter(Game.creeps, (creep) => creep.memory.role == 'knight');
 
     if(harvesters.length < 4) {
         var newName = nameGenerator.getName() + " (H)";
@@ -31,7 +33,7 @@ module.exports.loop = function () {
             }});
     }
 
-    if(builders.length < 1) {
+    if(builders.length < 2) {
         var newName = nameGenerator.getName() + " (B)";
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, MOVE, CARRY, CARRY], newName,
             {memory: {
@@ -40,9 +42,9 @@ module.exports.loop = function () {
         }});
     }
 
-    if(upgraders.length < 1) {
+    if(upgraders.length < 2) {
         var newName = nameGenerator.getName() + " (U)";
-        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE], newName,
+        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, CARRY, MOVE, MOVE, MOVE], newName,
             {memory: {
                 role: 'upgrader',
                 sourceIndex: 0
@@ -55,6 +57,21 @@ module.exports.loop = function () {
             {memory: {
                 role: 'mechanic',
                 sourceIndex: 0
+        }});
+    }
+
+    if(knights.length < 4) {
+        var newName = nameGenerator.getName() + " (K)";
+        if((knights.length % 2) == 1) {
+            var newAssemblyIndex = 1;
+        } else {
+            var newAssemblyIndex = 0;
+        }
+
+        Game.spawns['Spawn1'].spawnCreep([TOUGH,TOUGH,ATTACK,MOVE,MOVE], newName,
+            {memory: {
+                role: 'knight',
+                assemblyIndex: newAssemblyIndex
         }});
     }
 
@@ -82,6 +99,9 @@ module.exports.loop = function () {
         }
         if(creep.memory.role == 'mechanic') {
             roleMechanic.run(creep);
+        }
+        if(creep.memory.role == 'knight') {
+            roleKnight.run(creep);
         }
     }
 }
